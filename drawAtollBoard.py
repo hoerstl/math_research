@@ -1,5 +1,5 @@
 import turtle
-import AtollBoard
+from AtollBoard import *
 
 
 
@@ -19,9 +19,11 @@ def drawNewBoard():
     if islandNumber == 0:
         return
     #print(islandNumber)
-    startingPlayer, board = AtollBoard.createBoard(islandNumber)
+    newboard = AtollBoard(islandNumber)
+    code = newboard.generateCode(newboard.startingPlayer)
+
     if not releaseMode:
-        print(board)
+        print(newboard.board)
 
     t.reset()
     t.speed(0)
@@ -54,25 +56,27 @@ def drawNewBoard():
     t.goto(0, rmid - 20)
     t.circle(-rmid, extent=rotationDelta/2)
     for i in range(islandNumber):
-        if board[i][1] == "L":
+        if newboard.board[i][1] == "L":
             t.color("blue")
-        elif board[i][1] == "R":
+        elif newboard.board[i][1] == "R":
             t.color("red")
         else:
             t.color("white")
-        t.write(board[i][0], align="center", font=('Arial', 30, 'normal'))
+        t.write(newboard.board[i][0], align="center", font=('Arial', 30, 'normal'))
         t.circle(-rmid, extent=rotationDelta)
 
 
     t.penup()
     t.goto(500, -100)
-    if startingPlayer == "L":
+    if newboard.startingPlayer == "L":
         t.color("blue")
-    elif startingPlayer == "R":
+    elif newboard.startingPlayer == "R":
         t.color("red")
     else:
         raise RuntimeError("Weird starting Player")
-    t.write(startingPlayer + " to Start", align="center", font=('Arial', 40, 'normal'))
+    t.write(newboard.startingPlayer + " to Start", align="center", font=('Arial', 40, 'normal'))
+    t.goto(0, 0)
+    t.write(code, align="center", font=('Arial', 20, 'normal'))
 
 
 
@@ -87,9 +91,10 @@ if __name__ == '__main__':
     releaseMode = True
     root = turtle.Screen()
     t = turtle.Turtle()
+    if releaseMode:
+        t.hideturtle()
     t.speed(0)
-    islandNumber = 0
-    getNewSize()
+    islandNumber = 2
     root.onkeypress(drawNewBoard, "space")
     root.onkeypress(getNewSize, "s")
     root.listen()
