@@ -8,7 +8,8 @@ def getNewSize():
     num = root.textinput("Islands?", "How many islands do you want to play on?")
     backup = islandNumber
     try:
-        islandNumber = int(num)
+        islandNumber = max(2, int(num))
+
     except ValueError as e:
         islandNumber = backup
     root.listen()
@@ -19,7 +20,8 @@ def drawNewBoard():
         return
     #print(islandNumber)
     startingPlayer, board = AtollBoard.createBoard(islandNumber)
-    print(board)
+    if not releaseMode:
+        print(board)
 
     t.reset()
     t.speed(0)
@@ -29,8 +31,8 @@ def drawNewBoard():
 
     rotationDelta = 360 / islandNumber
 
-    r1 = 250
-    r2 = 350
+    r1 = 200
+    r2 = 300
     rmid = (r1 + r2) // 2
     for i in range(islandNumber):
         t.forward(r2)
@@ -63,7 +65,7 @@ def drawNewBoard():
 
 
     t.penup()
-    t.goto(450, 400)
+    t.goto(500, -100)
     if startingPlayer == "L":
         t.color("blue")
     elif startingPlayer == "R":
@@ -86,13 +88,8 @@ if __name__ == '__main__':
     root = turtle.Screen()
     t = turtle.Turtle()
     t.speed(0)
-    num = root.textinput("Islands?", "How many islands do you want to play on?")
-    backup = 0
-    try:
-        islandNumber = int(num)
-    except ValueError as e:
-        islandNumber = backup
-
+    islandNumber = 0
+    getNewSize()
     root.onkeypress(drawNewBoard, "space")
     root.onkeypress(getNewSize, "s")
     root.listen()

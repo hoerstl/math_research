@@ -26,7 +26,10 @@ def createBoard(size):
     finalBoard = []
 
     remainingSpaces = board[:]
-    p1SpaceCount = random.choice(range(len(remainingSpaces) - 2)) + 1
+    if len(remainingSpaces) == 2:
+        p1SpaceCount = 1
+    else:
+        p1SpaceCount = random.choice(range(len(remainingSpaces) - 2)) + 1
     p1Spaces = random.sample(remainingSpaces, p1SpaceCount)
     p1Distribution = randompartition(n, p1SpaceCount)
     for i in range(len(p1Spaces)):
