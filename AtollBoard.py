@@ -43,13 +43,13 @@ class AtollBoard:
         # print(self.board)
         if p1SpaceCount > p2SpaceCount:
             # print("Right Starts")
-            self.startingPlayer = "R"
+            self.currentPlayer = "R"
         elif p1SpaceCount == p2SpaceCount:
             # print("Left Starts")
-            self.startingPlayer = "L"
+            self.currentPlayer = "L"
         elif p1SpaceCount < p2SpaceCount:
             # print("Left Starts")
-            self.startingPlayer = "L"
+            self.currentPlayer = "L"
         else:
             raise RuntimeError("Somehow there are more than 3 comparisons between two fixed integers!")
 
@@ -64,6 +64,24 @@ class AtollBoard:
             j += 1
         result[k - 1] += choose
         return result
+
+
+    def takeable(self, index):
+        lspace = self.getSpace(index, -1)
+        thisSpace = self.getSpace(index, 0)
+        rspace = self.getSpace(index, 1)
+        if thisSpace[1] == self.currentPlayer:
+            return False
+
+        aggressionScore = 0
+        if lspace[1] == self.currentPlayer:
+            aggressionScore += lspace[0]
+        if rspace[1] == self.currentPlayer:
+            aggressionScore += rspace[0]
+
+        if aggressionScore > thisSpace[0]:
+            return True
+        return False
 
 
     def generateCode(self, playerPerspective):
@@ -122,6 +140,13 @@ class AtollBoard:
     def getSpace(self, start, offset):
         return self.board[(start + offset) % len(self.board)]
 
+
+    def aggress(self, index):
+        self.board[index] = (0, "N/A")
+        self.flipTurn()
+
+    def flipTurn(self):
+        self.currentPlayer = "L" if self.currentPlayer == "R" else "R"
 
     def getfirstindex(self, obj):
         return obj[0]

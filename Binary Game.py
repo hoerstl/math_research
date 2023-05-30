@@ -54,7 +54,7 @@ if __name__ == '__main__':
         l[i] = Number(change)
 
 
-    with open("out.pickle", "wb") as file:
+    with open("binaryout.pickle", "wb") as file:
         pickle.dump(passingsetsofNumbers, file)
 
 

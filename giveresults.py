@@ -1,7 +1,7 @@
 import pickle
 
 
-with open("out.pickle", "rb") as file:
+with open("binaryout.pickle", "rb") as file:
     passingsetsofNumbers = pickle.load(file)
 
 for base in range(2, 10):
