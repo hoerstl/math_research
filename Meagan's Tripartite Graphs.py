@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import oapackage
 import pickle
@@ -43,7 +45,6 @@ print("reduced graph: ")
 print(graph1_reduced)
 
 
-
 graph2 = np.zeros((size, size), dtype=int)
 edges2 = [(2, 4), (4, 5), (4, 6), (5, 0), (6, 0), (0, 1), (1, 3), (2, 6)]
 graph2 = attachEdges(graph2, edges2)
@@ -64,6 +65,29 @@ if np.all(graph1_reduced == graph2_reduced):
     print("The graphs are isomorphic!")
 else:
     print("These graphs are not isomorphic.")
+
+if __name__ == '__main__':
+    size = int(input("How many vertices does the graph have: "))
+    edges = input("What are the edges? (e.x. 1,2;3,4;5,6;): ")
+
+    num_edges = math.ceil(len(edges)/4)
+    ordered_edges = []
+
+    for edge_number in range(num_edges):
+        first_num = int(edges[4*edge_number])
+        second_num = int(edges[4*edge_number+2])
+
+        ordered_edges.append((first_num, second_num))
+
+    graph = np.zeros((size, size), dtype=int)
+    graph = attachEdges(graph, ordered_edges)
+    graph = reduce(graph)
+
+    print(graph)
+
+
+
+
 
 
 

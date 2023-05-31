@@ -1,7 +1,6 @@
 from Basen import Number
 import copy
 
-
 def checkpartitionable(base10Lists):
     numberLists = copy.deepcopy(base10Lists)
     for numberList_ in range(len(numberLists)):
