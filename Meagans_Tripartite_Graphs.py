@@ -1,5 +1,5 @@
 import math
-
+import re
 import numpy as np
 import oapackage
 import pickle
@@ -179,19 +179,22 @@ def main():
             ordered_edges = getTripartiteEdges(size, first, second, third)
             break
 
-
-        num_edges = math.ceil(len(edges) / 4)
+        edgeExpression = r"[0-9]+"
         ordered_edges = []
-
+        integers = re.findall(edgeExpression, edges)
         edgeError = None
-        for edge_number in range(num_edges):
-            first_num = int(edges[4 * edge_number])
-            second_num = int(edges[4 * edge_number + 2])
+
+        if len(integers) % 2 == 1:
+            edgeError = f"User entered {len(integers)} ends that the edges connect to. This cannot be odd."
+        for edge_Number in range(len(integers)//2):
+            first_num = int(integers[2 * edge_Number])
+            second_num = int(integers[2 * edge_Number + 1])
+            ordered_edges.append((first_num, second_num))
             if first_num >= size:
                 edgeError = f"User error, {first_num} is not in the acceptable range of labels from 0 to {size - 1}. Try again!"
             if second_num >= size:
                 edgeError = f"User error, {second_num} is not in the acceptable range of labels from 0 to {size - 1}. Try again!"
-            ordered_edges.append((first_num, second_num))
+
         if edgeError is None:
             break
         print(edgeError)
@@ -215,10 +218,12 @@ def main():
 
 if __name__ == '__main__':
     graphs = None
+    print("Welcome to Meagan's tripartite graphs. I can find the nim values for any graph you can label!")
+    print("Now, how can I help?")
     while True:
         try:
             main()
-        except RuntimeError:
+        except ValueError:
             print("You probably entered a letter where you wanted a number or you didn't type in the edges right. Try again!")
 
 
