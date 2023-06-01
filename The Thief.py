@@ -9,7 +9,7 @@ def getNimValue(original):
     if nimValue is not None:
         return nimValue
 
-
+    #
     childGraphs = []
 
     for vertex in getVertexMoves(reduced):
