@@ -1,7 +1,9 @@
 import math
+import pickle
 import turtle
 from AtollBoard import *
 import re
+import os
 
 
 
@@ -44,7 +46,7 @@ def getAngle(x, y):
 
 
 def getClickedIndex(angle):
-    global islandNumber, t, root, releaseMode, logicinp, currentBoard
+    global islandNumber, t, root, releaseMode, logicinprogress, currentBoard
     rotationDelta = 360 / islandNumber
     angle -= 90
     angle = angle % 360
@@ -64,20 +66,27 @@ def removeFromBoard(index):
 
 
 def createNewBoard():
-    global islandNumber, t, root, releaseMode, logicinp, currentBoard
+    global islandNumber, t, root, releaseMode, logicinprogress, currentBoard, initiallyGeneratedCode
     interestingCode = r"T[^|]D[^⬇]|[^⬇]D[^|]T"
     currentBoard = AtollBoard(islandNumber)
-    while not re.match(interestingCode, currentBoard.generateCode(currentBoard.currentPlayer)):
+    currentBoardCode = currentBoard.generateCode("L")
+    while not re.match(interestingCode, currentBoardCode):
         currentBoard = AtollBoard(islandNumber)
+        currentBoardCode = currentBoard.generateCode("L")
+    initiallyGeneratedCode = currentBoardCode
     drawCurrentBoard()
 
 def drawCurrentBoard():
-    global islandNumber, t, root, releaseMode, logicinp, currentBoard
-    if islandNumber == 0 or logicinp:
+    global islandNumber, t, root, releaseMode, logicinprogress, currentBoard, p1mode
+    if islandNumber == 0 or logicinprogress:
         return
-    logicinp = True
+    logicinprogress = True
     #print(islandNumber)
-    code = currentBoard.generateCode(currentBoard.currentPlayer)
+
+    if p1mode:
+        code = currentBoard.generateCode("L")
+    else:
+        code = currentBoard.generateCode(currentBoard.currentPlayer)
 
     if not releaseMode:
         print(currentBoard.board)
@@ -137,23 +146,111 @@ def drawCurrentBoard():
         raise RuntimeError("Weird starting Player")
     t.write(currentBoard.currentPlayer + " to Move", align="center", font=('Arial', 40, 'normal'))
     t.goto(0, 0)
+    if p1mode:
+        t.color("blue")
     t.write(code, align="center", font=('Arial', 20, 'normal'))
 
-    logicinp = False
+    logicinprogress = False
 
 
 
+def deemLeftWin():
+    global initiallyGeneratedCode
+    filename = "leftwins.save"
+    if os.path.exists(filename):
+        with open(filename, "rb") as file:
+            list = pickle.load(file)
+    else:
+        list = []
+    list.append(initiallyGeneratedCode)
+    with open(filename, "wb") as file:
+        pickle.dump(list, file)
+
+    createNewBoard()
 
 
+def deemRightWin():
+    global initiallyGeneratedCode
+    filename = "rightwins.save"
+    if os.path.exists(filename):
+        with open(filename, "rb") as file:
+            list = pickle.load(file)
+    else:
+        list = []
+    list.append(initiallyGeneratedCode)
+    with open(filename, "wb") as file:
+        pickle.dump(list, file)
+
+    createNewBoard()
 
 
+def deemTie():
+    global initiallyGeneratedCode
+    filename = "ties.save"
+    if os.path.exists(filename):
+        with open(filename, "rb") as file:
+            list = pickle.load(file)
+    else:
+        list = []
+    list.append(initiallyGeneratedCode)
+    with open(filename, "wb") as file:
+        pickle.dump(list, file)
 
+    createNewBoard()
+
+
+def listData():
+    if os.path.exists("leftwins.save"):
+        with open("leftwins.save", "rb") as file:
+            leftwins = pickle.load(file)
+    else:
+        leftwins = []
+
+    print("Here are the boards where left wins:")
+    for winningCode in leftwins:
+        print(winningCode)
+
+    if os.path.exists("rightwins.save"):
+        with open("rightwins.save", "rb") as file:
+            rightwins = pickle.load(file)
+    else:
+        rightwins = []
+
+    print("Here are the boards where right wins:")
+    for winningCode in rightwins:
+        print(winningCode)
+
+    if os.path.exists("ties.save"):
+        with open("ties.save", "rb") as file:
+            ties = pickle.load(file)
+    else:
+        ties = []
+
+    print("Here are the boards where both players tie:")
+    for winningCode in ties:
+        print(winningCode)
+
+
+def clearData():
+    global root
+    response = root.textinput("Deletion confirmation", "Are you sure you want to delete all gathered data?")
+    root.listen()
+    if not len(response) > 0:
+        return
+    if response.lower()[0] == "y":
+        with open("rightwins.save", "wb") as file:
+            pickle.dump([], file)
+        with open("leftwins.save", "wb") as file:
+            pickle.dump([], file)
 
 
 if __name__ == '__main__':
+    """Please note that all codes in the leftwins.save and rightwins.save are generated from left's perspective"""
     releaseMode = True
-    logicinp = False
+    p1mode = True
+    logicinprogress = False
     currentBoard = None
+    initiallyGeneratedCode = None
     root = turtle.Screen()
     t = turtle.Turtle()
     if releaseMode:
@@ -161,9 +258,14 @@ if __name__ == '__main__':
     t.speed(0)
     islandNumber = 10
     root.onkeypress(createNewBoard, "space")
-    root.onkeypress(drawCurrentBoard, "r")
+    root.onkeypress(drawCurrentBoard, "d")
     root.onkeypress(getNewSize, "s")
     root.onkeypress(skipTurn, "p")
+    root.onkeypress(deemLeftWin, "l")
+    root.onkeypress(deemRightWin, "r")
+    root.onkeypress(deemTie, "t")
+    root.onkeypress(listData, ".")
+    root.onkeypress(clearData, "c")
     root.onscreenclick(clicked)
     root.listen()
     root.mainloop()

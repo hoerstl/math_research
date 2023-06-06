@@ -85,6 +85,12 @@ class AtollBoard:
 
 
     def generateCode(self, playerPerspective):
+        """
+        This method generates the atoll codes (patent pending) for the AtollBoard object
+        :param playerPerspective: "L", "R", or "N/A"
+        :return:
+        """
+
         code = ""
         for space_ in range(len(self.board)):
             lspace = self.getSpace(space_, -1)
