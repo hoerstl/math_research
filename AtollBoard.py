@@ -70,7 +70,7 @@ class AtollBoard:
         lspace = self.getSpace(index, -1)
         thisSpace = self.getSpace(index, 0)
         rspace = self.getSpace(index, 1)
-        if thisSpace[1] == self.currentPlayer:
+        if thisSpace[1] == self.currentPlayer or thisSpace[1] == "N/A":
             return False
 
         aggressionScore = 0
