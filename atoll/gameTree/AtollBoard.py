@@ -4,14 +4,29 @@
 class AtollBoard:
     """
     This class is meant to simulate the behavior of a game of Aggression on an atoll.
-    To store the board in memory, all of player 1's armies will be represented with the positive integers while
+    To store the parentBoard in memory, all of player 1's armies will be represented with the positive integers while
     player 2's armies will be represented with the negative integers. The logic that follows assumes this is true.
     """
-    def __init__(self, size):
+    def __init__(self, size, playerToMove=1):
         self.board = [0 for i in range(size)]
         self.size = size
-        self.turn = 1
+
+        self.p1UsedArmies = 0
+        self.p2UsedArmies = 0
+        self.playerToMove = playerToMove
+        self.firstToAttack = None
         self.inDeploymentPhase = True
+
+
+    def getAvaialbleMoves(self):
+        """
+        Returns the Moves available to the player currently taking their playerToMove.
+        :return:
+        """
+        if self.playerToMove == 1:
+            return self.getP1AvailableMoves()
+        else:
+            return self.getP2AvailableMoves()
 
 
     def getP1AvailableMoves(self):
@@ -22,8 +37,7 @@ class AtollBoard:
         :return:
         """
         if self.inDeploymentPhase:
-            usedArmies = sum([p1Armies for p1Armies in self.board if p1Armies > 0])
-            availableArmies = self.size - usedArmies
+            availableArmies = self.size - self.p1UsedArmies
             deploymentOptions = []
             for emptySpaceIndex in [i for i in range(self.size) if self.board[i] == 0]:
                 for armyOption in range(1, availableArmies+1):
@@ -50,8 +64,7 @@ class AtollBoard:
         :return:
         """
         if self.inDeploymentPhase:
-            usedArmies = sum([p2Armies for p2Armies in self.board if p2Armies < 0])
-            availableArmies = self.size - usedArmies
+            availableArmies = self.size - self.p2UsedArmies
             deploymentOptions = []
             for emptySpaceIndex in [i for i in range(self.size) if self.board[i] == 0]:
                 for armyOption in range(1, availableArmies+1):
@@ -70,24 +83,59 @@ class AtollBoard:
             return vulnerableP1Indexes
 
 
+    def deploy(self, index, armyCount):
+        if self.playerToMove == 1:
+            self.p1Deploy(index, armyCount)
+        else:
+            self.p2Deploy(index, armyCount)
+        self.playerToMove ^= 3
+        self.checkDeploymentPhaseComplete()
+
+
     def p1Deploy(self, index, armyCount):
+        assert self.inDeploymentPhase
         assert armyCount > 0
         assert self.board[index] == 0
         self.board[index] = armyCount
+        self.p1UsedArmies += armyCount
+        if self.firstToAttack is None and self.p1UsedArmies == self.size:
+            self.firstToAttack = 1
 
 
     def p2Deploy(self, index, armyCount):
+        assert self.inDeploymentPhase
         assert armyCount < 0
         assert self.board[index] == 0
         self.board[index] = armyCount
+        self.p2UsedArmies = abs(armyCount)
+        if self.firstToAttack is None and self.p2UsedArmies == self.size:
+            self.firstToAttack = 2
+
+
+    def checkDeploymentPhaseComplete(self):
+        boardIsFull = 0 not in self.board
+        playersOutOfArmies = self.p1UsedArmies == self.p2UsedArmies and self.p2UsedArmies == self.size
+        if boardIsFull or playersOutOfArmies:
+            self.inDeploymentPhase = False
+            self.playerToMove = self.firstToAttack if self.firstToAttack else 1
+
+
+    def attack(self, index):
+        if self.playerToMove == 1:
+            self.p1Attack(index)
+        else:
+            self.p2Attack(index)
+        self.playerToMove ^= 3
 
 
     def p1Attack(self, index):
+        assert not self.inDeploymentPhase
         assert self.board[index] < 0
         self.board[index] = 0
 
 
     def p2Attack(self, index):
+        assert not self.inDeploymentPhase
         assert self.board[index] > 0
         self.board[index] = 0
 
@@ -96,5 +144,9 @@ class AtollBoard:
         return self.board[(index-1)%len(self.board)]
 
     def getClockwiseValue(self, index):
-        return self.board[(index+1)%len(self.board)]
+        return self.board[(index+1)%len(self.board)] if self.size != 2 else 0
+
+
+    def __str__(self):
+        return f"P{self.playerToMove} to move, inDeployment {self.inDeploymentPhase}: {self.board}"
 

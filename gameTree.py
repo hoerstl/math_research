@@ -13,7 +13,7 @@ def getNimValue(board):
     reducedValue = board.reduce()
     dataKey = str(reducedValue)
 
-    # Check if this board has a nim value that has already been calculated
+    # Check if this parentBoard has a nim value that has already been calculated
     nimValue = previousData.get(dataKey, None)
     if nimValue is not None:
         return nimValue

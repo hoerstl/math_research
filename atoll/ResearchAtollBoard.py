@@ -40,7 +40,7 @@ class AtollBoard:
 
 
 
-        # print(self.board)
+        # print(self.parentBoard)
         if p1SpaceCount > p2SpaceCount:
             # print("Right Starts")
             self.currentPlayer = "R"

@@ -21,15 +21,15 @@ def getNewSize():
 
 def skipTurn():
     """
-    This method skips the current player's turn if they have no moves and the other player does. Draws the board
+    This method skips the current player's playerToMove if they have no moves and the other player does. Draws the parentBoard
     on a successful skip.
     :return: True if the current player has no moves and their opponent does
     """
     global currentBoard, islandNumber, finalDrawComplete
-    currentBoardCode = currentBoard.generateCode(currentBoard.currentPlayer)  # Get the code for the current board
+    currentBoardCode = currentBoard.generateCode(currentBoard.currentPlayer)  # Get the code for the current parentBoard
 
     if currentBoardCode.find("T") == -1 and currentBoardCode.find("D") != -1:  # If you have no moves and the other player does
-        currentBoard.flipTurn()  # Swap the turn
+        currentBoard.flipTurn()  # Swap the playerToMove
         drawCurrentBoard()
         return True
     if currentBoardCode.find("T") == -1 and currentBoardCode.find("D") == -1:
@@ -38,7 +38,7 @@ def skipTurn():
             displayWinner()
             finalDrawComplete = True
         return True
-    # If the other player has no moves either, we don't bother swapping the turn.
+    # If the other player has no moves either, we don't bother swapping the playerToMove.
     return False
 
 def clicked(x, y):
@@ -83,7 +83,7 @@ def removeFromBoard(index):
         if currentBoard.takeable(index):
             currentBoard.aggress(index)
             if not skipTurn():  # Try to skip the new player's move
-                # if you can't, draw the board for the player to move
+                # if you can't, draw the parentBoard for the player to move
                 drawCurrentBoard()
 
     else:

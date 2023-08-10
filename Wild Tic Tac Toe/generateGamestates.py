@@ -22,15 +22,15 @@ def expand(node):
         row = position[0]
         col = position[1]
         # Make O move in that position
-        newboardO = copy.deepcopy(node.value)  # copy the board
+        newboardO = copy.deepcopy(node.value)  # copy the parentBoard
         newboardO[row][col] = 'O'  # place an O there
-        OChild = Node(newboardO, node, (row, col))  # Make a node for the new board
+        OChild = Node(newboardO, node, (row, col))  # Make a node for the new parentBoard
         newchildren.append(OChild)  # Append it to the list of children
 
         # Make X move in that position
-        newboardX = copy.deepcopy(node.value)  # copy the board
+        newboardX = copy.deepcopy(node.value)  # copy the parentBoard
         newboardX[row][col] = 'X'  # place an X there
-        XChild = Node(newboardX, node, (row, col))  # Make a node for the new board
+        XChild = Node(newboardX, node, (row, col))  # Make a node for the new parentBoard
         newchildren.append(XChild)  # Append it to the list of children
     node.children = copy.copy(newchildren)
     return newchildren
