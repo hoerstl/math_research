@@ -16,9 +16,10 @@ class AtollBoard:
         self.playerToMove = playerToMove
         self.firstToAttack = None
         self.inDeploymentPhase = True
+        self.skipCount = 0
 
 
-    def getAvaialbleMoves(self):
+    def getAvaialbleMoves(self):  # TODO: Make it so that the last deployment action always places the remaining armies of either player
         """
         Returns the Moves available to the player currently taking their playerToMove.
         :return:
@@ -83,6 +84,15 @@ class AtollBoard:
             return vulnerableP1Indexes
 
 
+    def tryToSkipTurn(self):
+        if self.skipCount == 2:
+            return False
+        else:
+            self.playerToMove ^= 3
+            self.skipCount += 1
+            return True
+
+
     def deploy(self, index, armyCount):
         if self.playerToMove == 1:
             self.p1Deploy(index, armyCount)
@@ -90,6 +100,7 @@ class AtollBoard:
             self.p2Deploy(index, armyCount)
         self.playerToMove ^= 3
         self.checkDeploymentPhaseComplete()
+        self.skipCount = 0
 
 
     def p1Deploy(self, index, armyCount):
@@ -107,7 +118,7 @@ class AtollBoard:
         assert armyCount < 0
         assert self.board[index] == 0
         self.board[index] = armyCount
-        self.p2UsedArmies = abs(armyCount)
+        self.p2UsedArmies += abs(armyCount)
         if self.firstToAttack is None and self.p2UsedArmies == self.size:
             self.firstToAttack = 2
 
@@ -126,6 +137,7 @@ class AtollBoard:
         else:
             self.p2Attack(index)
         self.playerToMove ^= 3
+        self.skipCount = 0
 
 
     def p1Attack(self, index):
