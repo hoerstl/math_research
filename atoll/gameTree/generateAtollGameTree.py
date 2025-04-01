@@ -4,8 +4,9 @@ from simpleNode import Node
 import pickle
 import time
 
+seenBoards = {} # "canonicalBoardForm": Node
 startTime = time.time()
-atollSize = 5
+atollSize = 9
 root = Node(AtollBoard(atollSize))
 incompleteNodes = [root]
 while len(incompleteNodes) != 0:
@@ -26,9 +27,19 @@ while len(incompleteNodes) != 0:
         else:
             newBoard.attack(move)
 
-        newNode = Node(newBoard)
-        parent.children.append(newNode)
-        incompleteNodes.append(newNode)
+        # Convert the newBoard to its canonical form and check if we've seen it yet. If we have, use that node instead
+        canonicalForm = newBoard.canonicalForm
+        cachedNode = seenBoards.get(canonicalForm)
+        if cachedNode:
+            node = cachedNode
+            parent.isBiological += "0"
+        else:
+            node = Node(newBoard)
+            incompleteNodes.append(node)
+            parent.isBiological += "1"
+        
+        parent.children.append(node)
+        seenBoards[canonicalForm] = node
 
 
 with open('atollTree.pickle', 'wb') as file:
@@ -39,12 +50,6 @@ print(f"Finished in {endTime - startTime} seconds.")
 
 print(f"Player {root.playerWhoWins} wins on an atoll of size {atollSize}.")
 print('\n\n')
-
-print("Possible first Moves:")
-for i, child in enumerate(root.children):
-    print(child.value)
-    print(child.children)
-    print(child.playerWhoWins)
 
 
 

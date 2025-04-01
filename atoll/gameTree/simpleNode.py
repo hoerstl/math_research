@@ -4,6 +4,7 @@ class Node:
     def __init__(self, value):
         self.value = value
         self.children = []
+        self.isBiological = ""
         self.cachedPlayerWhoWins = None  # Can have the value 1, or 2
 
     @property

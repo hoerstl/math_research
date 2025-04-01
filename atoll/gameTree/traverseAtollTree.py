@@ -5,6 +5,7 @@ from simpleNode import Node
 def displayChildrenInformation(node):
     print(f"Here are options for P{node.value.playerToMove} to move on {node.value.board}:")
     for i, child in enumerate(node.children):
+        print("*" * (node.isBiological[i] == "0"), end="")
         print(f"{i}.\t", child.value, end="  " if child.playerWhoWins == 1 else "  \t")
         print(f"P{child.playerWhoWins} will win")
 

@@ -1,6 +1,3 @@
-
-
-
 class AtollBoard:
     """
     This class is meant to simulate the behavior of a game of Aggression on an atoll.
@@ -17,6 +14,35 @@ class AtollBoard:
         self.firstToAttack = None
         self.inDeploymentPhase = True
         self.skipCount = 0
+
+
+    @property
+    def canonicalForm(self):
+        n = len(self.board)
+        arr = self.board * 2 # Concatenate array with itself
+        smallest_index = 0
+        for i in range(1, n):
+            for j in range(n):
+                if arr[smallest_index + j] < arr[i + j]:
+                    break
+                if arr[smallest_index + j] > arr[i + j]:
+                    smallest_index = i
+                    break
+        smallestNormal = arr[smallest_index:smallest_index + n]
+
+        arr = list(reversed(self.board)) * 2  # Concatenate the reversed array with itself
+        smallest_index = 0
+        for i in range(1, n):
+            for j in range(n):
+                if arr[smallest_index + j] < arr[i + j]:
+                    break
+                if arr[smallest_index + j] > arr[i + j]:
+                    smallest_index = i
+                    break
+        smallestReversed = arr[smallest_index:smallest_index + n]
+        lexicographicallySmallest = str(sorted([smallestNormal, smallestReversed])[0])
+
+        return lexicographicallySmallest + str(self.inDeploymentPhase) + str(self.firstToAttack) + str(self.playerToMove)
 
 
     def getAvaialbleMoves(self):  # TODO: Make it so that the last deployment action always places the remaining armies of either player
