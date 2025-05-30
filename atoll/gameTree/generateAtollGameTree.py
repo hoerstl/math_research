@@ -6,7 +6,7 @@ import time
 
 seenBoards = {} # "canonicalBoardForm": Node
 startTime = time.time()
-atollSize = 9
+atollSize = int(input("What size atoll would you like to generate? "))
 root = Node(AtollBoard(atollSize))
 incompleteNodes = [root]
 while len(incompleteNodes) != 0:

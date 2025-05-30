@@ -16,11 +16,18 @@ class Node:
             self.calculateBaseCaseWhoWins()
             return self.cachedPlayerWhoWins
 
-        playerCanForceAWin = False
+        # If they can force a win they will
+        canForceTie = False
         for child in self.children:
             if self.value.playerToMove == child.playerWhoWins:  # If the player to move can move to a board where they win
-                playerCanForceAWin = True
-        self.cachedPlayerWhoWins = self.value.playerToMove if playerCanForceAWin else self.value.playerToMove ^ 3
+                self.cachedPlayerWhoWins = self.value.playerToMove
+                return self.cachedPlayerWhoWins
+            if child.playerWhoWins == 3: # player 3 is considered to be a tie condition
+                canForceTie = True
+            
+        
+        # Otherwise the other player wins
+        self.cachedPlayerWhoWins = 3 if canForceTie else self.value.playerToMove ^ 3 
         return self.cachedPlayerWhoWins
 
 
@@ -44,7 +51,8 @@ class Node:
         elif p1Armies < p2Armies:
             self.cachedPlayerWhoWins = 2
         else:
-            self.cachedPlayerWhoWins = self.value.firstToAttack  # Default Winner when tied for land and forces
+            # Changed the below value to 3 to see who can force ties
+            self.cachedPlayerWhoWins = 3 # self.value.firstToAttack  # Default Winner when tied for land and forces
 
 
     def __str__(self):

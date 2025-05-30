@@ -66,7 +66,10 @@ class AtollBoard:
         if self.inDeploymentPhase:
             availableArmies = self.size - self.p1UsedArmies
             deploymentOptions = []
-            for emptySpaceIndex in [i for i in range(self.size) if self.board[i] == 0]:
+            emptySpaceIndicies = [i for i in range(self.size) if self.board[i] == 0]
+            if self.isLastDeploymentOpportunity and availableArmies != 0:
+                return [(emptySpace, availableArmies) for emptySpace in emptySpaceIndicies]
+            for emptySpaceIndex in emptySpaceIndicies:
                 for armyOption in range(1, availableArmies+1):
                     deploymentOptions.append((emptySpaceIndex, armyOption))
             return deploymentOptions
@@ -93,7 +96,10 @@ class AtollBoard:
         if self.inDeploymentPhase:
             availableArmies = self.size - self.p2UsedArmies
             deploymentOptions = []
-            for emptySpaceIndex in [i for i in range(self.size) if self.board[i] == 0]:
+            emptySpaceIndicies = [i for i in range(self.size) if self.board[i] == 0]
+            if self.isLastDeploymentOpportunity and availableArmies != 0:
+                return [(emptySpace, -availableArmies) for emptySpace in emptySpaceIndicies]
+            for emptySpaceIndex in emptySpaceIndicies:
                 for armyOption in range(1, availableArmies+1):
                     deploymentOptions.append((emptySpaceIndex, -armyOption))
             return deploymentOptions
@@ -108,6 +114,25 @@ class AtollBoard:
                 if abs(attackPower) > abs(self.board[p1Space]):
                     vulnerableP1Indexes.append(p1Space)
             return vulnerableP1Indexes
+        
+    
+    @property
+    def isLastDeploymentOpportunity(self):
+        assert self.inDeploymentPhase
+        emptyIndicies = [i for i in range(self.size) if self.board[i] == 0]
+        
+        if len(emptyIndicies) == 1:
+            return True
+        if len(emptyIndicies) == 2:
+            if self.playerToMove == 1:
+                # If P2 has armies
+                return self.p2UsedArmies != self.size
+            else:
+                return self.p1UsedArmies != self.size
+
+
+        return False
+            
 
 
     def tryToSkipTurn(self):
